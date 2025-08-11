@@ -39,16 +39,21 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 int PINFIRE = 5;
 
-bool redrawDial = true;
+
 
 /* paste code snippets from the reference documentation here */
 DcsBios::ActionButton fireTestBtnToggle("FIRE_TEST_BTN", "TOGGLE", PINFIRE);
-//DcsBios::Potentiometer brtConsole("BRT_CONSOLE", A7);
 
+
+bool redrawDial = true;
+int NeedleRadius = 40;
+int inc = 1;
+int deg = 0;
+int SweepAngle = 180;
 void onSideslipChange(unsigned int newValue) {
   static unsigned int lastValue = 0;
   newValue2 = ( (float)newValue / 65535.0f ) * 2.0f - 1.0f;
-  DrawDial(display, newValue2, 64, 55, 30, -1, 1, 0.5, 1, 180, "UH-1 Sideslip", redrawDial);
+  DrawDial(display, newValue2, 64, 55, NeedleRadius, -1, 1, inc, deg, SweepAngle, "UH-1 Sideslip", redrawDial);
 }
 DcsBios::IntegerBuffer sideslipBuffer(UH_1H_SIDESLIP, onSideslipChange);
 
@@ -83,14 +88,17 @@ void DrawDial(Adafruit_SSD1306 &d, double curval, int cx, int cy, int r, double 
   if (Redraw) {
     Redraw = false;
     // draw the dial only one time--this will minimize flicker
+    bool flag1 = false;
+    if (flag1){
     d.fillRect(0, 0,  127 , 16, SSD1306_WHITE);
     d.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
     d.setTextSize(1);
     d.setCursor(2, 4);
     d.println(label);
+    }
     // center the scale about the vertical axis--and use this to offset the needle, and scale text
     Offset = (270 +  sa / 2) * degtorad;
-    // find hte scale step value based on the hival low val and the scale sweep angle
+    // find the scale step value based on the hival low val and the scale sweep angle
     // deducting a small value to eliminate round off errors
     // this val may need to be adjusted
     stepval = ( inc) * (double (sa) / (double (hival - loval))) + .00;
