@@ -15,7 +15,7 @@
 
 // Definitions
 #define SCREEN_WIDTH 128  // OLED display width, in pixels
-#define SCREEN_HEIGHT 50  // OLED display height, in pixels
+#define SCREEN_HEIGHT 64  // OLED display height, in pixels
 #define OLED_RESET -1      // Reset pin # (or -1 if sharing Arduino reset pin)
 
 // Initialise variables
@@ -32,21 +32,23 @@ bool Redraw2 = true;
 bool Redraw3 = true;
 bool Redraw4 = true;
 double ox , oy ;
+float newValue2;
 
 // Start Class
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 int PINFIRE = 5;
 
-bool redrawDial = false;
+bool redrawDial = true;
 
 /* paste code snippets from the reference documentation here */
 DcsBios::ActionButton fireTestBtnToggle("FIRE_TEST_BTN", "TOGGLE", PINFIRE);
-DcsBios::Potentiometer brtConsole("BRT_CONSOLE", A7);
+//DcsBios::Potentiometer brtConsole("BRT_CONSOLE", A7);
 
 void onSideslipChange(unsigned int newValue) {
   static unsigned int lastValue = 0;
-  DrawDial(display, newValue, 64, 32, 30, 0, 65535, 10000, 0, 180, "Test", redrawDial);
+  newValue2 = ( (float)newValue / 65535.0f ) * 2.0f - 1.0f;
+  DrawDial(display, newValue2, 64, 55, 30, -1, 1, 0.5, 1, 180, "UH-1 Sideslip", redrawDial);
 }
 DcsBios::IntegerBuffer sideslipBuffer(UH_1H_SIDESLIP, onSideslipChange);
 
